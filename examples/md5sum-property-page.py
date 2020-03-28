@@ -4,6 +4,14 @@ from gi.repository import Nautilus, Gtk, GObject
 from os import path
 
 
+def md5(filename):
+    hash_md5 = hashlib.md5()
+    with open(filename, "rb") as f:
+        for chunk in iter(lambda: f.read(8192), b""):
+            hash_md5.update(chunk)
+    return hash_md5.hexdigest()
+
+
 class MD5SumPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
     def __init__(self):
         pass
@@ -22,7 +30,7 @@ class MD5SumPropertyPage(GObject.GObject, Nautilus.PropertyPageProvider):
                 continue
 
             filename = unquote(file.get_uri()[len('file://'):])
-            md5sum = hashlib.md5(filename.encode("utf-8")).hexdigest()
+            md5sum = md5(filename.encode("utf-8"))
 
             label_fn = Gtk.Label(path.basename(filename))
 
